@@ -3,7 +3,7 @@ import 'firebase/auth';
 import { clientCredentials } from './client';
 
 const checkUser = (uid) => new Promise((resolve, reject) => {
-  fetch(`https://localhost:7095/checkuser/${uid}`, {
+  fetch(`https://localhost:7015/checkuser/${uid}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',

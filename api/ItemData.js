@@ -22,17 +22,17 @@ const getSingleItem = (id) => new Promise((resolve, reject) => {
     .then((data) => resolve(data))
     .catch(reject);
 });
-const getCategoryItem = (id) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItemCategory/${id}`, {
-    method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
-    .then((response) => response.json())
-    .then((data) => resolve(data))
-    .catch(reject);
-});
+// const getCategoryItem = (id) => new Promise((resolve, reject) => {
+//   fetch(`${dbUrl}/menuItemCategory/${id}`, {
+//     method: 'GET',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//   })
+//     .then((response) => response.json())
+//     .then((data) => resolve(data))
+//     .catch(reject);
+// });
 
 const createItem = (payload) => new Promise((resolve, reject) => {
   fetch(`${dbUrl}/api/menuItem`, {
@@ -53,7 +53,13 @@ const createItem = (payload) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 const updateItem = (payload) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/api/menuItem/${payload.id}.json`, {
+  console.warn('Update Item URL:', `${dbUrl}/api/menuItem/${payload.id}`);
+  console.warn('Update Item Headers:', {
+    'Content-Type': 'application/json',
+  });
+  console.warn('Update Item Payload:', payload);
+
+  fetch(`${dbUrl}/api/menuItem/${payload.id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -61,14 +67,24 @@ const updateItem = (payload) => new Promise((resolve, reject) => {
     body: JSON.stringify(payload),
   })
     .then(async (res) => {
+      console.warn('Response Status:', res.status);
+
       let data;
       if (res.ok) {
         data = await res.json();
+        console.warn('Response Data:', data);
         resolve(data);
+      } else {
+        console.warn('Error Response:', await res.json());
+        reject(new Error('Error updating item'));
       }
     })
-    .catch(reject);
+    .catch((error) => {
+      console.error('Fetch Error:', error);
+      reject(error);
+    });
 });
+
 const deleteItem = (id) => new Promise((resolve, reject) => {
   fetch(`${dbUrl}/api/menuItem/${id}`, {
     method: 'DELETE',
@@ -96,6 +112,6 @@ export {
   createItem,
   updateItem,
   deleteItem,
-  getCategoryItem,
+  // getCategoryItem,
   deleteItemFromOrder,
 };

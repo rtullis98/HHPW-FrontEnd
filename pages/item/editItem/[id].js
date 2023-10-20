@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import ItemForm from '../../../components/forms/createItem';
@@ -10,8 +9,16 @@ export default function EditItem() {
   const { id } = router.query;
 
   useEffect(() => {
-    getSingleItem(id).then(setEditItem);
+    if (id) {
+      getSingleItem(id).then(setEditItem);
+    }
   }, [id]);
+
+  // Display a loading state or null if editItem is empty
+  if (!Object.keys(editItem).length) {
+    return null; // or loading state
+  }
+
   console.warn(editItem);
-  return (<ItemForm obj={editItem} />);
+  return <ItemForm obj={editItem} />;
 }

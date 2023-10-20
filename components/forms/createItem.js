@@ -5,8 +5,7 @@ import Button from 'react-bootstrap/Button';
 import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Row from 'react-bootstrap/Row';
-import { createItem, updateItem } from '../../api/ItemData';
-import { getAllCategories } from '../../api/miscData';
+import { createItem, getSingleItem, updateItem } from '../../api/ItemData';
 
 const initialState = {
   Name: '',
@@ -17,15 +16,31 @@ const initialState = {
 
 export default function ItemForm({ obj }) {
   const [formInput, setFormInput] = useState(initialState);
-  const [type, setType] = useState([]);
   const router = useRouter();
+
   useEffect(() => {
-    if (obj.id) {
-      setFormInput(obj);
+    if (obj && obj.id) {
+      getSingleItem(obj.id)
+        .then((data) => {
+          console.warn('API Response:', data); // Log the response
+          // Check if data is not undefined before setting the form input
+          if (data && Object.keys(data).length > 0) {
+            // Map the properties to match the initial state
+            const mappedData = {
+              Name: data.name || '', // Adjust property names if needed
+              Description: data.description || '',
+              ImageUrl: data.imageUrl || '',
+              Price: data.price || '',
+            };
+            setFormInput(mappedData);
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching item details:', error);
+        });
     }
-    getAllCategories().then(setType);
   }, [obj]);
-  console.warn(obj, 'this');
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormInput((prevState) => ({
@@ -37,21 +52,29 @@ export default function ItemForm({ obj }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (obj.id) {
+      console.warn('Updating item with id:', obj.id);
       updateItem(formInput)
-        .then(() => router.push('/'));
+        .then(() => router.push('/'))
+        .catch((error) => {
+          console.error('Error updating item:', error);
+        });
     } else {
+      console.warn('Creating a new item');
       const payload = {
         ...formInput,
       };
-      createItem(payload).then(() => {
-        router.push('/itemsOnDom');
-      });
+      createItem(payload)
+        .then(() => {
+          router.push('/itemsOnDom');
+        })
+        .catch((error) => {
+          console.error('Error creating item:', error);
+        });
     }
-    console.warn(type);
   };
 
   return (
-    <Form onSubmit={handleSubmit}>
+    <Form onSubmit={handleSubmit} autoComplete="off">
       <h2 className="text-white mt-5">{obj.id ? 'Update' : 'Create'} Item</h2>
 
       <Row className="mb-3">
@@ -64,6 +87,7 @@ export default function ItemForm({ obj }) {
             value={formInput.Name}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
         </Form.Group>
       </Row>
@@ -74,9 +98,10 @@ export default function ItemForm({ obj }) {
             type="text"
             placeholder="Enter Description"
             name="Description"
-            value={formInput.Description}
+            value={formInput.Description || ''}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
         </Form.Group>
       </Row>
@@ -87,9 +112,10 @@ export default function ItemForm({ obj }) {
             type="text"
             placeholder="Enter Price"
             name="Price"
-            value={formInput.Price}
+            value={formInput.Price || ''}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
         </Form.Group>
       </Row>
@@ -100,33 +126,13 @@ export default function ItemForm({ obj }) {
             type="text"
             placeholder="Enter Link"
             name="ImageUrl"
-            value={formInput.ImageUrl}
+            value={formInput.ImageUrl || ''}
             onChange={handleChange}
             required
+            autoComplete="off"
           />
         </Form.Group>
       </Row>
-      <Form.Group className="mb-3" controlId="formGridLevel">
-        <Form.Select
-          aria-label="Category"
-          name="MenuCategoryId"
-          onChange={handleChange}
-          className="mb-3"
-          value={obj.MenuCategoryId}
-        >
-          <option value="">Select a Category Type</option>
-          {
-            type.map((types) => (
-              <option
-                key={types.id}
-                value={types.id}
-              >
-                {types.type}
-              </option>
-            ))
-          }
-        </Form.Select>
-      </Form.Group>
       <Button type="submit">{obj.id ? 'Update' : 'Create'} Item</Button>
     </Form>
   );
@@ -138,7 +144,6 @@ ItemForm.propTypes = {
     Name: PropTypes.string,
     Description: PropTypes.string,
     Price: PropTypes.number,
-    MenuCategoryId: PropTypes.number,
   }),
 };
 ItemForm.defaultProps = {

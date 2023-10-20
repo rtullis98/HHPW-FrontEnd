@@ -1,15 +1,21 @@
 const dbUrl = 'https://localhost:7015';
 const getAllOrders = () => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/orders`, {
+  fetch(`${dbUrl}/api/orders`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
   })
-    .then((response) => response.json())
-    .then((data) => resolve(Object.values(data)))
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`Failed to fetch orders: ${response.status} - ${response.statusText}`);
+      }
+      return response.json();
+    })
+    .then(resolve)
     .catch(reject);
 });
+
 const getSingleOrder = (id) => new Promise((resolve, reject) => {
   fetch(`${dbUrl}/orders/${id}`, {
     method: 'GET',

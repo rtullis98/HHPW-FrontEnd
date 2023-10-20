@@ -1,7 +1,7 @@
 import { dbUrl } from './OrderData';
 
 const getAllItems = () => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItem`, {
+  fetch(`${dbUrl}/api/menuItem`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -12,7 +12,7 @@ const getAllItems = () => new Promise((resolve, reject) => {
     .catch(reject);
 });
 const getSingleItem = (id) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItem/${id}`, {
+  fetch(`${dbUrl}/api/menuItem/${id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ const getCategoryItem = (id) => new Promise((resolve, reject) => {
 });
 
 const createItem = (payload) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItem`, {
+  fetch(`${dbUrl}/api/menuItem`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -53,7 +53,7 @@ const createItem = (payload) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 const updateItem = (payload) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItem/${payload.id}.json`, {
+  fetch(`${dbUrl}/api/menuItem/${payload.id}.json`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -70,7 +70,7 @@ const updateItem = (payload) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 const deleteItem = (id) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/menuItem/${id}`, {
+  fetch(`${dbUrl}/api/menuItem/${id}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ const deleteItem = (id) => new Promise((resolve, reject) => {
     .catch(reject);
 });
 const deleteItemFromOrder = (orderId, itemId) => new Promise((resolve, reject) => {
-  fetch(`${dbUrl}/MenuItemsOrder/${orderId}/${itemId}`, {
+  fetch(`${dbUrl}/api/MenuItemsOrder/${orderId}/${itemId}`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
